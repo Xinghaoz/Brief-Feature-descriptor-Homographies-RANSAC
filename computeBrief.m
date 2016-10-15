@@ -11,33 +11,35 @@ function [locs,desc] = computeBrief(im, GaussianPyramid, locsDoG, k, levels, com
 %		 the pyramid level of the keypoints
 % desc - an m x n bits matrix of stacked BRIEF descriptors. m is the number of valid descriptors in the image and will vary
 
-    patchWidth = 9;
-    nbits = length(compareA);
+    load('parameters.mat')
 
     halfPatch = floor(patchWidth / 2);
+    % halfPatch = 4;
     [a, b, levels_size] = size(GaussianPyramid);
 
+    % Find valid keypoints.
     locs = locsDoG(locsDoG(:,1) > halfPatch & ...
         locsDoG(:,1) < b - halfPatch & ...
         locsDoG(:,2) > halfPatch & ...
         locsDoG(:,2) < a - halfPatch, :);
 
-    [~, levelInds] = ismember(locs(:,3), levels);
+    [m, ~] = size(locs);
+    desc = [];
 
-    [Xx, Xy] = ind2sub([patchWidth, patchWidth], compareA);
-    [Yx, Yy] = ind2sub([patchWidth, patchWidth], compareB);
-    Xx = repmat((Xx - halfPatch - 1)', size(locs, 1), 1);
-    Xy = repmat((Xy - halfPatch - 1)', size(locs, 1), 1);
-    Yx = repmat((Yx - halfPatch - 1)', size(locs, 1), 1);
-    Yy = repmat((Yy - halfPatch - 1)', size(locs, 1), 1);
+    for i = 1 : m
+        x = locs(i, 2);
+        y = locs(i);
 
-    compX1 = repmat(locs(:, 1), 1, nbits) + Xx;
-    compY1 = repmat(locs(:, 2), 1, nbits) + Xy;
-    compX2 = repmat(locs(:, 1), 1, nbits) + Yx;
-    compY2 = repmat(locs(:, 2), 1, nbits) + Yy;
-    compL = repmat(levelInds, 1, nbits);
+        xStart = x - 4;
+        xEnd = x + 4;
+        yStart = y - 4;
+        yEnd = y + 4;
 
-    comp1 = sub2ind(size(GaussianPyramid), compY1, compX1, compL);
-    comp2 = sub2ind(size(GaussianPyramid), compY2, compX2, compL);
+        block = im([xStart:xEnd], [yStart:yEnd]);
 
-    desc = GaussianPyramid(comp1) < GaussianPyramid(comp2);
+        temp = zeros(1,256);
+        for j = 1 : nbits
+            temp(j) = block(compareA(j)) < block(compareB(j));
+        end
+        desc = [desc;temp];
+    end

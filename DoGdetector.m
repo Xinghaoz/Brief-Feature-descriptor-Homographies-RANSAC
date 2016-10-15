@@ -7,3 +7,8 @@ GaussianPyramid = createGaussianPyramid(im, sigma0, k, levels);
 PrincipalCurvature = computePrincipalCurvature(DoGPyramid);
 
 locsDoG = getLocalExtrema(DoGPyramid, DoGLevels, PrincipalCurvature, theta_c, theta_r);
+
+% % Q1.5: Show the img
+% imshow(im);
+% hold on
+% plot(locsDoG(:, 1), locsDoG(:, 2), '.g');

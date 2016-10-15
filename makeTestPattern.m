@@ -7,7 +7,7 @@ function [compareA, compareB] = makeTestPattern(patchWidth, nbits)
 %
 % Run this routine for the given parameters patchWidth = 9 and n = 256 and save the results in testPattern.mat.
 
-    compareA = randi([0 patchWidth * patchWidth],nbits,1);
-    compareB = randi([0 patchWidth * patchWidth],nbits,1);
+    compareA = randi([1 patchWidth * patchWidth],nbits,1);
+    compareB = randi([1 patchWidth * patchWidth],nbits,1);
 
     save('testPattern.mat', 'compareA', 'compareB')

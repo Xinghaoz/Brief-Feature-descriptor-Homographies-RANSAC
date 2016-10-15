@@ -12,6 +12,15 @@ function [locs, desc] = briefLite(im)
     load('parameters.mat')
     load('testPattern')
 
+    [~, ~, channels] = size(im);
+
+    % First RGB -> Grey, Then Grey -> Double!
+    if channels > 1
+        im = rgb2gray(im);
+    end
+
+    im = im2double(im);
+
     [locsDoG, GaussianPyramid] = DoGdetector(im, sigma0, k, levels, theta_c, theta_r);
 
     [locs, desc] = computeBrief(im, GaussianPyramid, locsDoG, k, levels, compareA, compareB);
